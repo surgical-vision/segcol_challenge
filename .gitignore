@@ -5,3 +5,4 @@ Endo*
 *.tif
 eval_test.py
 generate_dummy_examples.py
+*pycache*
