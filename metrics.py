@@ -183,16 +183,5 @@ def compute_CLDice(pred_list, gt_list, optimal_thresholds, num_classes=4):
     return average_clDice_perclass
 
 
-# 4.8
-# Q1: should AP calculation be with threshold?   
-#     Use torchmetrics.classification.AP
-# Q2: Input format for eval?   
-#     Map, make sure they submit in map format and specifically ask for float32
-# Q3: for baseline, shall we train the model or just use DexiNed / HaustralFolds / DMNet / Segmentation / SurgToolLoc
-
-# 4.10
-# Q: AP or MulticlassAP (under classification) or mAP (under detection)
-#   input format：map with 5 classes -> MultiClassAP
-
 
 
