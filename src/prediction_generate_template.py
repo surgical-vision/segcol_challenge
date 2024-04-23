@@ -1,8 +1,6 @@
 """
 SegcCol challenge - MICCAI 2024
 Challenge link: 
-Task 1: Segmentation in simulated colonoscopy
-Task 2: 
 
 This is a dummy example to illustrate how participants should format their prediction outputs.
 """
