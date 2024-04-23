@@ -1,0 +1,6 @@
+scikit-image==0.23.1
+synapseclient==2.7.1
+tensorboard==2.13.0
+torchmetrics==1.1.2
+torchvision==0.13.1a0c
+Pillow==9.4.0

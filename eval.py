@@ -4,14 +4,17 @@ from metrics import AP, ODS, OIS, compute_dice, compute_CLDice
 import glob
 
 
-def get_images(file, tiff=False):
-    # Open the image
-    img = Image.open(file)
+def get_images(file, npy=False):
+    if npy:
+        img_data = np.load(file)
 
-    # Convert the image data to a numpy array
-    img_data = np.array(img)
+    if not npy:
+        # Open the image
+        img = Image.open(file)
 
-    if not tiff:
+        # Convert the image data to a numpy array
+        img_data = np.array(img)
+
         # Create class channels using np.where
         class1 = np.where(img_data == 255, 1, 0) # fold
         class2 = np.where(img_data == 127, 1, 0) # tool1 
@@ -34,9 +37,9 @@ folder = "segcol_challenge/Seq*/predictions/" # change according to final struct
 
 # get pred_list and gt_list by reading images from the directory
 # the prediction data should be multichannel/class (4) tif files.
-for file in glob.glob(folder + "*/*.tif"):
-    pred_list.append(get_images(file, tiff = True))
-    gt_list.append(get_images(file.replace("predictions", "seqm_maps").replace(".tif", ".png")))
+for file in glob.glob(folder + "*/*.npy"):
+    pred_list.append(get_images(file, npy = True))
+    gt_list.append(get_images(file.replace("predictions", "seqm_maps").replace(".npy", ".png")))
 
 
 # calculate the dice score, optimal thresholds, AP, CLDice, ODS, OIS
