@@ -31,15 +31,15 @@ pred_list = []
 gt_list = []
 pred_list_orig = []
 thresh_list = np.linspace(0.01, 0.99, 99)
-folder = "segcol_challenge/Seq*/predictions/" # change according to final structure
-# if we want the results per seq add another for loop
+folder = "data/output/Seq*/predictions/" # change according to final structure
+# if we want the results per seg add another for loop
 
 
 # get pred_list and gt_list by reading images from the directory
 # the prediction data should be multichannel/class (4) tif files.
-for file in glob.glob(folder + "*/*.npy"):
+for file in glob.glob(folder + "*.npy"):
     pred_list.append(get_images(file, npy = True))
-    gt_list.append(get_images(file.replace("predictions", "seqm_maps").replace(".npy", ".png")))
+    gt_list.append(get_images(file.replace("output", "input").replace("predictions", "segm_maps").replace(".npy", ".png")))
 
 
 # calculate the dice score, optimal thresholds, AP, CLDice, ODS, OIS
@@ -58,3 +58,20 @@ ods = ODS(pred_list_fold, gt_list_fold, thresh_list)
 ois = OIS(pred_list_fold, gt_list_fold, thresh_list)
 print("ods", ods)
 print("ois", ois)
+
+
+'''
+dice_score         [0.00644047 0.         0.13483548 0.        ]
+optimal_thresholds [0.55148822 1.         0.46746114 1.        ]
+ap                 [ 0.0028987 -0.       0.07122158 -0.        ]
+clDice_score       [0.00633226 0.         0.10956853 0.        ]
+ods 0.01131080926255049
+ois 0.01131809195190073
+
+dice_score         [0.03177795 0.         0.4406434  0.        ]
+optimal_thresholds [0.50495468 1.         0.48528391 1.        ]
+ap                 [ 0.02862942 -0.          0.3087773  -0.        ]
+clDice_score       [0.03009712 0.         0.17968246 0.        ]
+ods 0.344925629307999
+ois 0.34524105547086176
+'''
