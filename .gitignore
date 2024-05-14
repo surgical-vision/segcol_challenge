@@ -1,4 +1,4 @@
-Seq*
+output
 pred
 gt
 Endo*
@@ -8,3 +8,4 @@ generate_dummy_examples.py
 *pycache*
 Task2_dummy_docker
 test.py
+samples_rema.txt

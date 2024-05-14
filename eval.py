@@ -33,7 +33,7 @@ gt_list = []
 pred_list_orig = []
 thresh_list = np.linspace(0.01, 0.99, 99)
 folder = "/home/xinwei/segcol_challenge/data/output/Seq*/predictions/" # change according to final structure
-num_classes = 4
+
 # if we want the results per seg add another for loop
 
 
@@ -46,6 +46,9 @@ for file in sorted(glob.glob(folder + "*.npy")):
 
 #----------------------------------------------------------------------------------------------------
 print('Four class evaluation:')
+
+num_classes = 4
+
 # calculate the dice score, optimal thresholds, AP, CLDice, ODS, OIS
 optimal_thresholds = find_optimal_thresholds(pred_list, gt_list, num_classes = num_classes)
 pred_list_handled, gt_list_handled = check_for_zeros(pred_list, gt_list, optimal_thresholds, num_classes = num_classes)
