@@ -1,7 +1,0 @@
-scikit-image
-synapseclient
-tensorboard
-torchmetrics
-torchvision
-Pillow
-numpy
