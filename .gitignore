@@ -6,3 +6,5 @@ Endo*
 eval_test.py
 generate_dummy_examples.py
 *pycache*
+Task2_dummy_docker
+test.py

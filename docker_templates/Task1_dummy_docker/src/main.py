@@ -43,25 +43,30 @@ def predict_masks(pred_file, output_file):
     ### replace below with your own prediction pipeline ###
     # We generate dummy predictions here with noise added to ground truth
     
-    pred_orig = get_images(pred_file).astype(np.float16) #dummy make sure pred is float
+    pred_orig = get_images(pred_file).astype(np.float64) #dummy make sure pred is float
 
-    prediction = random_noise(pred_orig, mode='gaussian', var=0.1, rng = 42)
+    prediction = random_noise(pred_orig, mode='gaussian', var=0.1, rng = 42)#.astype(np.float16) #dummy
 
     ### End of prediction pipeline ###
 
     # Save the predictions in the correct format
     # Change the format of predction to nparray and save
+    assert type(prediction) == np.ndarray, \
+        "Wrong type of predicted depth, expected np.ndarray, got {}".format(type(prediction))
+    
     assert prediction.shape == (480, 640, 4), \
         "Wrong size of predicted depth, expected (480, 640, 4), got {}".format(list(prediction.shape))
     
+    assert prediction.dtype == np.float64, \
+        "Wrong data type of predicted depth, expected np.float64, got {}".format(prediction.dtype)
  
     np.save(output_file, prediction)
     print(f"Saved prediction to {output_file}")
 
 
 if __name__ == "__main__":
-    main_path = sys.argv[1]
-    main_path_output = sys.argv[2]
+    main_path = "/home/xinwei/segcol_challenge/data/input" #sys.argv[1]
+    main_path_output = "/home/xinwei/segcol_challenge/data/output" #sys.argv[2]
 
     # Replace 'segm_maps' with 'imgs' in line 71 and 75 if you are not using the dummy data
     if not os.path.exists(main_path):
