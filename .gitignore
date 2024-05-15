@@ -1,4 +1,4 @@
-output
+data/output/*
 pred
 gt
 Endo*
@@ -6,6 +6,6 @@ Endo*
 eval_test.py
 generate_dummy_examples.py
 *pycache*
-Task2_dummy_docker
 test.py
+docker_templates/Task2_dummy_docker/data
 samples_rema.txt

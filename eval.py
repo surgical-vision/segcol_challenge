@@ -32,7 +32,7 @@ pred_list = []
 gt_list = []
 pred_list_orig = []
 thresh_list = np.linspace(0.01, 0.99, 99)
-folder = "/home/xinwei/segcol_challenge/data/output/Seq*/predictions/" # change according to final structure
+folder = "data/output/Seq*/predictions/" # change according to final structure
 
 # if we want the results per seg add another for loop
 

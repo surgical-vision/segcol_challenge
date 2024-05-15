@@ -9,4 +9,8 @@ def check_file_format(file):
                 return False
     return True
 
-print(check_file_format('/home/xinwei/segcol_challenge/samples_rema.txt'))
+check_result = check_file_format('samples_xtest.txt')
+if check_result:
+    print('File format is correct')
+else:
+    print('File format is incorrect')

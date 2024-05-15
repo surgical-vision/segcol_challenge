@@ -65,20 +65,20 @@ def predict_masks(pred_file, output_file):
 
 
 if __name__ == "__main__":
-    main_path = "/home/xinwei/segcol_challenge/data/input" #sys.argv[1]
-    main_path_output = "/home/xinwei/segcol_challenge/data/output" #sys.argv[2]
+    input_path = sys.argv[1]
+    output_path = sys.argv[2]
 
     # Replace 'segm_maps' with 'imgs' in line 71 and 75 if you are not using the dummy data
-    if not os.path.exists(main_path):
+    if not os.path.exists(input_path):
         print('No input folder found')
         exit(1)
     else:
-        print(main_path +' exists')
-        input_file_list = np.sort(glob.glob(f"{main_path}/Seq*/segm_maps/*.png"))
+        print(input_path +' exists')
+        input_file_list = np.sort(glob.glob(f"{input_path}/Seq*/segm_maps/*.png"))
 
 
     for i in range(len(input_file_list)):
-        output_file = input_file_list[i].replace(main_path, main_path_output).replace('segm_maps','predictions').replace('.png','.npy')  #main_path2
+        output_file = input_file_list[i].replace(input_path, output_path).replace('segm_maps','predictions').replace('.png','.npy')  #main_path2
         output_folder = os.path.dirname(output_file)
         if not os.path.exists(output_folder):
             os.makedirs(output_folder)
