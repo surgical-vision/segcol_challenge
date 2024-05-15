@@ -1,5 +1,4 @@
-# for tool: F1 score
-# for edge: AP, OIS, ODS, CLDice
+# metrics: Dice, AP, OIS, ODS, CLDice
 # for ranking: mAP
 
 from torchmetrics.functional.classification import multilabel_average_precision, dice
@@ -15,25 +14,9 @@ from skimage.morphology import skeletonize, skeletonize_3d
 
 # Dice (torchmetrics.classification.Dice)
 # Dice = 2*TP / (2*TP + FP + FN)
-
 # AP (torchmetrics.classification.AveragePrecision)
-
 # OIS, ODS (https://github.com/lllyasviel/DanbooRegion/blob/master/code/ap_ois_ods/ap_ois_ods.py)
 
-'''def compute_precision(ground_truth_region_map, estimated_region_map, threshold):
-    ground_truth_edge_map = ground_truth_region_map > threshold 
-    estimated_edge_map = estimated_region_map > threshold
-    return np.sum(ground_truth_edge_map * estimated_edge_map) / np.sum(estimated_edge_map)
-
-
-def AP(image_list, threshold):
-    ap = 0.0
-    for img_path in image_list:
-        ground_truth = cv2.imread(img_path + '.ground_truth.png')
-        estimation = cv2.imread(img_path + '.estimation.png')
-        ap += compute_precision(ground_truth, estimation, threshold)
-    ap /= float(len(image_list))
-    return ap'''
 
 def check_for_zeros(pred_list, gt_list, thresholds, num_classes = 4):
     gt_list_handled = gt_list.copy()
@@ -159,18 +142,8 @@ def ODS(pred_list, gt_list, thresh_list, num_classes):
         max_f1_list.append(max([f1(pred_list_class, gt_list_class, threshold) for threshold in thresh_list]))
     return max_f1_list
 
-# val_list = ['./images/1', './images/2', './images/3']
-# print('AP (Average precision) = %.5f' % AP(val_list))
-# print('OIS (Optimal Image Scale) = %.5f' % OIS(val_list))
-# print('ODS (Optimal Dataset Scale) = %.5f' % ODS(val_list))
-
-
-# mAP (torchmetrics.detection.MeanAveragePrecision)
-
 
 # CLDice https://github.com/jocpae/clDice/blob/master/cldice_metric/cldice.py
-
-
 
 def cl_score(v, s):
     """[this function computes the skeleton volume overlap]
@@ -214,7 +187,7 @@ def compute_CLDice(pred_list, gt_list, optimal_thresholds, num_classes=4):
             if np.sum(ground_truth) == 0 and np.sum(estimation) == 0:
                 score = 1.0
             else:
-                score = clDice(estimation, ground_truth)  #### ask
+                score = clDice(estimation, ground_truth)  
             total_clDice += score
         average_clDice_perclass.append(total_clDice / float(len(pred_list)))
     return average_clDice_perclass

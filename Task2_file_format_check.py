@@ -9,7 +9,7 @@ def check_file_format(file):
                 return False
     return True
 
-check_result = check_file_format('samples_xtest.txt')
+check_result = check_file_format('data/output/samples_xtest.txt')
 if check_result:
     print('File format is correct')
 else:
