@@ -12,7 +12,7 @@ Task 1 and 2 will be evaluated according to the eval.py script.
 
 The evaluation for Task 1 requires fistly generating predictions according to 'docker_templates'. 
 
-1. Generate predictions: 
+#### 1. Generate predictions: 
 
 ```bash
 cd docker_templates/Task1_dummy_docker
@@ -21,7 +21,7 @@ docker run --gpus all -it --rm -v "$(pwd)/../../data:/data" <image_name> /data/i
 ```
 
 
-2. Evaluate:
+#### 2. Evaluate:
 
 ```bash
 cd ../..
@@ -31,7 +31,7 @@ python eval.py
 
 Task 2 requires fistly generating a text file according to 'docker_templates', then checking if the text file content format is correct:
 
-1. Generate sample list: 
+#### 1. Generate sample list: 
 
 ```bash
 cd docker_templates/Task2_dummy_docker
@@ -40,7 +40,7 @@ docker run --gpus all -it --rm -v "$(pwd)/../../data:/data" <image_name> /data/i
 ```
 
 
-2. Format check:
+#### 2. Format check:
 
 
 ```bash
