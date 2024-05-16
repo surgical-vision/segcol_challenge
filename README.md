@@ -1,9 +1,9 @@
 # SegCol Challenge 2024
 ## Semantic Segmentation for Tools and Fold Edges in Colonoscopy data
 
-[Challenge Website](https://www.synapse.org/#!Synapse:syn54124209/wiki/626563)
+### Challenge Website [https://www.synapse.org/#!Synapse:syn54124209/wiki/626563](https://www.synapse.org/#!Synapse:syn54124209/wiki/626563)
 
-Contact: [endovis-weiss-vision@ucl.ac.uk](endovis-weiss-vision@ucl.ac.uk)
+### Contact: [endovis-weiss-vision@ucl.ac.uk](endovis-weiss-vision@ucl.ac.uk)
 
 
 
