@@ -1,14 +1,16 @@
 # SegCol Challenge 2024
-## Semantic Segmentation for Tools and Fold Edges in Colonoscopy data
+### Semantic Segmentation for Tools and Fold Edges in Colonoscopy data
 
-### Challenge Website [https://www.synapse.org/#!Synapse:syn54124209](https://www.synapse.org/#!Synapse:syn54124209)
+#### Challenge Website [https://www.synapse.org/#!Synapse:syn54124209](https://www.synapse.org/#!Synapse:syn54124209)
 
-### Contact: [endovis-weiss-vision@ucl.ac.uk](endovis-weiss-vision@ucl.ac.uk)
+#### Contact: [endovis-weiss-vision@ucl.ac.uk](endovis-weiss-vision@ucl.ac.uk)
 
 
 
 ## Evaluation
 Task 1 and 2 will be evaluated according to the eval.py script. 
+
+#### Task1
 
 The evaluation for Task 1 requires fistly generating predictions according to 'docker_templates'. 
 
@@ -28,6 +30,7 @@ cd ../..
 python eval.py
 
 ```
+#### Task1
 
 Task 2 requires fistly generating a text file according to 'docker_templates', then checking if the text file content format is correct:
 
