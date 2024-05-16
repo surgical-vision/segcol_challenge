@@ -10,7 +10,7 @@
 ## Evaluation
 Task 1 and 2 will be evaluated according to the eval.py script. 
 
-### Task1
+### Task 1
 
 The evaluation for Task 1 requires fistly generating predictions according to 'docker_templates'. 
 
@@ -30,7 +30,7 @@ cd ../..
 python eval.py
 
 ```
-### Task1
+### Task 2
 
 Task 2 requires fistly generating a text file according to 'docker_templates', then checking if the text file content format is correct:
 
