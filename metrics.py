@@ -105,7 +105,7 @@ def compute_f1_score(ground_truth_region_map, estimated_region_map, threshold):
     recall = true_positive / total_actual_positive if total_actual_positive != 0 else 0
     
     if precision + recall == 0:
-        f1_score = 1
+        f1_score = 0
     else:
         f1_score = 2 * (precision * recall) / (precision + recall)
     
@@ -135,12 +135,15 @@ def OIS(pred_list, gt_list, thresh_list, num_classes):
 
 def ODS(pred_list, gt_list, thresh_list, num_classes):
     max_f1_list = []
+    best_threshold = []
     for class_i in range(num_classes):
         # Calculate average F1 score for each threshold and find the maximum
         pred_list_class = [pred[:,:,class_i] for pred in pred_list]
         gt_list_class = [gt[:,:,class_i] for gt in gt_list]
-        max_f1_list.append(max([f1(pred_list_class, gt_list_class, threshold) for threshold in thresh_list]))
-    return max_f1_list
+        computed_list = [f1(pred_list_class, gt_list_class, threshold) for threshold in thresh_list]
+        max_f1_list.append(max(computed_list))
+        best_threshold.append(thresh_list[np.where(computed_list == max(computed_list))[0]])
+    return max_f1_list, best_threshold
 
 
 # CLDice https://github.com/jocpae/clDice/blob/master/cldice_metric/cldice.py
