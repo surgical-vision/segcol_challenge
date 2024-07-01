@@ -1,7 +1,7 @@
 # metrics: Dice, AP, OIS, ODS, CLDice
 # for ranking: mAP
 
-from torchmetrics.functional.classification import multilabel_average_precision, dice
+from torchmetrics.functional.classification import binary_average_precision, dice
 from torchmetrics.classification import MultilabelROC
 import numpy as np
 
@@ -51,7 +51,6 @@ def find_optimal_thresholds(pred_list, gt_list, num_classes):
     metric = MultilabelROC(num_labels=num_classes, thresholds=None)
     fpr, tpr, thresholds = metric(pred_list_tensor, gt_list_tensor)
     optimal_thresholds = []
-    dice_list = []
     for i in range(len(tpr)):
         J = tpr[i] - fpr[i]  # Youden's index
         idx = np.argmax(J)
@@ -81,15 +80,15 @@ def AP(pred_list, gt_list, thresholds, num_classes = 4, average = None):
     transform = transforms.Compose([
         transforms.ToTensor(),  # Converts image to tensor with values in [0, 1]
     ])
-    gt_list_tensor = [None] * len(pred_list)
-    pred_list_tensor = gt_list_tensor.copy()
-    for i in range(len(pred_list)):
-        gt_list_tensor[i] = transform(gt_list[i])
-        pred_list_tensor[i] = transform(pred_list[i])
+    gt_list_tensor = [transform(gt) for gt in gt_list]
+    pred_list_tensor = [transform(pred) for pred in pred_list]
+
     # input shape: [n, num_classes, w, h]
     gt_list_tensor = torch.stack(gt_list_tensor, dim=0)
     pred_list_tensor = torch.stack(pred_list_tensor, dim=0)
-    AP = multilabel_average_precision(pred_list_tensor, gt_list_tensor, num_classes, average, thresholds=thresholds)#None)
+    AP = []
+    for i in range(num_classes):
+        AP.append(binary_average_precision(pred_list_tensor[:,i,:,:], gt_list_tensor[:,i,:,:], thresholds=[thresholds[i]])) #None)
     return AP
 
 
@@ -194,7 +193,6 @@ def compute_CLDice(pred_list, gt_list, optimal_thresholds, num_classes=4):
             total_clDice += score
         average_clDice_perclass.append(total_clDice / float(len(pred_list)))
     return average_clDice_perclass
-
 
 
 

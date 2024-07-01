@@ -6,6 +6,8 @@ import os
 import time, platform
 import numpy as np
 import cv2
+import glob
+import tifffile as tiff
 
 
 def numpy_load(file_path1, file_path2):
@@ -14,54 +16,39 @@ def numpy_load(file_path1, file_path2):
     return array1, array2
     
 
-def parse_args():
-    """Parse command line arguments."""
-    parser = argparse.ArgumentParser(description='DexiNed merge')
-    
-    # Data parameters
-    parser.add_argument('--folder1',
-                        type=str,
-                        default=None,
-                        help='the path to the directory with the output from folds, 1 channel.')
-    parser.add_argument('--folder2',
-                        type=str,
-                        default=None,
-                        help='the path to the directory with the output from tool, 4 channels.')
-    parser.add_argument('--output_merge_dir',
-                        type=str,
-                        default='./merged_results',
-                        help='the path to output the results.')
-    
-    args = parser.parse_args()
-    return args
-
-
-def main(args):
+def main(folder1, folder2, output_merge_dir):
     """Main function."""
 
     print('Merge two numpy')
 
     # Define folder path
-    merged_folder_path = args.output_merge_dir
+    merged_folder_path = output_merge_dir
 
     if not os.path.exists(merged_folder_path):
         os.makedirs(merged_folder_path)
-    merged_file_path = './merged_results/merged_array.npy'
-    # merge
-    array1 = np.random.rand(1, 480, 640)
-    array2 = np.random.rand(4, 480, 640)
-    # Change the first channel of the loaded second array to be the loaded first array
-    array2[0, :, :] = array1[0, :, :]
-    # Save 
-    np.save(merged_file_path, array2)
-    # print('shape', array2.shape)
+    for file in glob.glob(os.path.join(folder1,'*','imgs','*.npy')):
+        print('file', file)
+        file_path1 = file
+        file_path2 = file.replace(folder1, folder2)
+        print('file_path2', file_path2)
+        array1, array2 = numpy_load(file_path1, file_path2)
+        # Change the first channel of the loaded second array to be the loaded first array
+        merged_array = array2.copy()
+        merged_array[0, :, :] = array1
+        # Save
+        merged_file_path = file.replace(folder1, merged_folder_path)
+        os.makedirs(os.path.dirname(merged_file_path), exist_ok=True)
+        np.save(merged_file_path, merged_array.transpose(1, 2, 0))
+        print('shape', merged_array.shape)
 
     
     print('-------------------------------------------------------')
     print('Finish merge')
     print('-------------------------------------------------------')
 
-if __name__ == '__main__':
-    args = parse_args()
-    main(args)
+# merge two folders of numpy files such that the first channel of the second folder is replaced by the first folder
+folder1 = "data/output/Seq*/predictions1/"
+folder2 = "data/output/Seq*/predictions2/"
+output_merge_dir = "data/output/Seq*/predictions/"
+main(folder1, folder2, output_merge_dir)
 
