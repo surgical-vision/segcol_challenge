@@ -3,30 +3,34 @@
 
 # SEGCOL NOTES:
 1. Packages:
-```bash
-pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
-pip install kornia
-pip install opencv-python
-pip install tensorboard
-pip install scikit-image
-pip install torchmetrics
-```
+    ```bash
+    pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+    pip install kornia
+    pip install opencv-python
+    pip install tensorboard
+    pip install scikit-image
+    pip install torchmetrics
+    ```
 
 2. Evaluation:
-- Qualitative:
-```bash
-python main.py --checkpoint_data 16/16_model.pth  --nonpy #(testing on segcol valid, using model put in segcol folder)
-```
-- Quantitative:
-```bash
-python main.py --checkpoint_data 16/16_model.pth 
-python eval.py
-```
+
+    Our pre-trained challenge model can be found [here](https://liveuclac-my.sharepoint.com/:u:/g/personal/ucabrd0_ucl_ac_uk/EUPTTS2vSrBEkv2O08YDi_EBBM_kDAmjyDZlCGbL9Xd9wQ?e=Zvmqbo) and save it in to the following directory: `checkpoints/16/16_model.pth`. 
+
+
+    - Qualitative:
+    ```bash
+    python main.py --checkpoint_data 16/16_model.pth  --nonpy #(testing on segcol valid, using model put in segcol folder)
+    ```
+    - Quantitative:
+    ```bash
+    python main.py --checkpoint_data 16/16_model.pth 
+    python eval.py
+    ```
 
 3. Train:
-```bash
-nohup CUDA_VISIBLE_DEVICES=1 python main.py --is_testing False > trainfold.log 2>&1 &
-```
+    ```bash
+    nohup CUDA_VISIBLE_DEVICES=1 python main.py --is_testing False > trainfold.log 2>&1 &
+    ```
 
 
 
