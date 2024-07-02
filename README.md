@@ -7,9 +7,9 @@
 
 
 ## Baseline
-We have included [Dexined](Folds_Baseline_Dexined) and [?]() as baselines for folds edge detection and tool segmentation, respectively. After generating the `.npy` predictions, the output from both methods can be merged using [merge.py](merge.py) and then evaluated as done in [Evaluation](#evaluation)
+We have included [Dexined](Folds_Baseline_Dexined) and [DRNforToolSeg](https://github.com/razvancaramalau/SegCol_task2.git) as baselines for folds edge detection and tool segmentation, respectively. After generating the `.npy` predictions, the output from both methods can be merged using [merge.py](merge.py) and then evaluated as done in [Evaluation](#evaluation)
 
-We will use this baseline for Task2 evaluation. For each model please refer to instructions under the corresponding folders.
+We will use this baseline for Task2 evaluation. For each model, please take a look at the instructions under the corresponding folders.
 
 ## Evaluation
 Task 1 and 2 will be evaluated according to the eval.py script. 
