@@ -11,3 +11,4 @@ docker_templates/Task2_dummy_docker/data
 samples_rema.txt
 metrics_test.py
 temp/
+*.pth

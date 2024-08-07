@@ -2,6 +2,7 @@
 [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/dense-extreme-inception-network-for-edge/edge-detection-on-mdbd)](https://paperswithcode.com/sota/edge-detection-on-mdbd?p=dense-extreme-inception-network-for-edge)
 
 # SEGCOL NOTES:
+<a id="packages"></a>
 1. Packages:
     ```bash
     pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
@@ -12,25 +13,43 @@
     pip install torchmetrics
     ```
 
-2. Evaluation:
+2. Data:
+    ```bash
+    python create_pair_lists.py --data_path /path/to/segcol/data/input/
+    ```
+3. Evaluation:
 
-    Our pre-trained challenge model can be found [here](https://liveuclac-my.sharepoint.com/:u:/g/personal/ucabrd0_ucl_ac_uk/EUPTTS2vSrBEkv2O08YDi_EBBM_kDAmjyDZlCGbL9Xd9wQ?e=Zvmqbo) and save it in to the following directory: `checkpoints/16/16_model.pth`. 
+    Our pre-trained challenge model can be found [here](https://liveuclac-my.sharepoint.com/:u:/g/personal/ucabrd0_ucl_ac_uk/EUPTTS2vSrBEkv2O08YDi_EBBM_kDAmjyDZlCGbL9Xd9wQ?e=Zvmqbo) and save it in to the following directory: `checkpoints/SEGCOL/16/16_model.pth`. 
 
 
     - Qualitative:
     ```bash
-    python main.py --checkpoint_data 16/16_model.pth  --nonpy #(testing on segcol valid, using model put in segcol folder)
+    python main.py --checkpoint_data 16/16_model.pth --is_testing --input_val_dir /path/to/segcol/data/input/ --nonpy
     ```
     - Quantitative:
     ```bash
-    python main.py --checkpoint_data 16/16_model.pth 
-    python eval.py
+    python main.py --checkpoint_data 16/16_model.pth --is_testing --input_val_dir /path/to/segcol/data/input/ --input_dir /path/to/segcol/data/input/
     ```
 
-3. Train:
+4. Train:
     ```bash
-    nohup CUDA_VISIBLE_DEVICES=1 python main.py --is_testing False > trainfold.log 2>&1 &
+    nohup CUDA_VISIBLE_DEVICES=1 python main.py > trainfold.log 2>&1 &
     ```
+
+5. Create submission docker:
+
+    To create a submission docker with this baseline, follow the steps below:
+
+    - Copy `Folds_Baseline_Dexined` into `docker_templates/Task1_dummy_docker/src/`
+    - Replace `docker_templates/Task1_dummy_docker/src/main.py` contents with `Folds_Baseline_Dexined/docker_main.py`
+    - Ensure requirements.txt in your docker contains all required packages from [Packages](#packages)
+    - For cv2 to work, edit `Dockerfile` to include if you got error reported: 
+        ```dockerfile
+        # Update package lists and install necessary libraries
+        RUN apt-get update && apt-get install -y \
+            libgl1-mesa-glx \
+            libglib2.0-0
+        ```
 
 
 

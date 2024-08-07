@@ -68,7 +68,8 @@ if __name__ == "__main__":
     input_path = sys.argv[1]
     output_path = sys.argv[2]
 
-    # Replace 'segm_maps' with 'imgs' in line 71 and 75 if you are not using the dummy data
+    # Replace 'segm_maps' with 'imgs' in line 78 and 82 if you are not using the dummy data. 
+    # If you are not using the dummy data, you should also make sure the output name is aligned with segm_maps names, as done in '/segcol_challenge/Folds_Baseline_Dexined/docker_main.py'
     if not os.path.exists(input_path):
         print('No input folder found')
         exit(1)

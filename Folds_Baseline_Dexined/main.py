@@ -234,8 +234,7 @@ def parse_args():
                         type=str,
                         # default=train_inf['train_list'],
                         help='Dataset sample indices list.')
-    parser.add_argument('--is_testing',type=bool,
-                        default=True, #is_testing,
+    parser.add_argument('--is_testing', action='store_true',
                         help='Script in testing mode.')
     parser.add_argument('--double_img',
                         type=bool,
@@ -247,7 +246,7 @@ def parse_args():
                         help='use previous trained data')  # Just for test
     parser.add_argument('--checkpoint_data',
                         type=str,
-                        default='10/10_model.pth',# 4 6 7 9 14
+                        default='16/16_model.pth',# 4 6 7 9 14
                         help='Checkpoint path from which to restore model weights from.')
     parser.add_argument('--test_img_width',
                         type=int,
@@ -327,8 +326,8 @@ def parse_args():
 
     args.test_data = TEST_DATA
     args.train_data = TRAIN_DATA
-    args.input_dir = train_inf['data_dir']
-    args.input_val_dir = test_inf['data_dir']
+    # args.input_dir = train_inf['data_dir']
+    # args.input_val_dir = test_inf['data_dir']
     args.test_list = test_inf['test_list']
     args.train_list = train_inf['train_list']
     args.test_img_width = test_inf['img_width']
@@ -489,6 +488,5 @@ def main(args):
     print('-------------------------------------------------------')
 
 if __name__ == '__main__':
-    os.chdir("/home/rema/workspace/Dexined_Segcol")
     args = parse_args()
     main(args)

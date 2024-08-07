@@ -30,7 +30,7 @@ def dataset_info(dataset_name, is_linux=True):
                       'img_width': 640,  # 1280
                       'test_list': 'valid_pair_list.lst',
                       'train_list': 'train_pair_list.lst',
-                      'data_dir': '/raid/xinwei/dataset/segcol',  # WIN: '../.../dataset/BIPED/edges'
+                      'data_dir': '',  # WIN: '../.../dataset/BIPED/edges'
                       'yita': 0.5},
             'BSDS': {
                 'img_height': 512, #321
@@ -119,7 +119,7 @@ def dataset_info(dataset_name, is_linux=True):
                       'img_width': 640,  # 1280
                       'test_list': 'valid_pair_list.lst',
                       'train_list': 'train_pair_list.lst',
-                      'data_dir': '/raid/xinwei/dataset/segcol',  # WIN: '../.../dataset/BIPED/edges'
+                      'data_dir': '',  # WIN: '../.../dataset/BIPED/edges'
                       'yita': 0.5},
             'BSDS': {'img_height': 512,  # 321
                      'img_width': 512,  # 481
