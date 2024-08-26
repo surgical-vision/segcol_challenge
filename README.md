@@ -6,12 +6,12 @@
 #### 📧 Contact: [endovis-weiss-vision@ucl.ac.uk](endovis-weiss-vision@ucl.ac.uk)
 
 
-## 📊 Baseline
+## 📈 Baseline
 We have included [Dexined](Folds_Baseline_Dexined) and [DeepLab](Tools_Baseline_DeepLab) as baselines for folds edge detection and tool segmentation, respectively. After generating the `.npy` predictions, the output from both methods can be merged using [merge.py](merge.py) and then evaluated as done in [Evaluation](#evaluation)
 
 We will use this baseline for Task2 evaluation. For each model, please refer to the instructions under the corresponding folders.
 
-## 📈 Evaluation
+## 📊 Evaluation
 Task 1 and 2 will be evaluated according to the eval.py script. 
 
 ### 📝 Task 1
