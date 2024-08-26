@@ -1,5 +1,7 @@
-import numpy as np
-from torchmetrics.functional.classification import multilabel_average_precision, dice
+# metrics: Dice, AP, OIS, ODS, CLDice
+# for ranking: mAP
+
+from torchmetrics.functional.classification import binary_average_precision, dice
 from torchmetrics.classification import MultilabelROC
 import numpy as np
 
@@ -49,7 +51,6 @@ def find_optimal_thresholds(pred_list, gt_list, num_classes):
     metric = MultilabelROC(num_labels=num_classes, thresholds=None)
     fpr, tpr, thresholds = metric(pred_list_tensor, gt_list_tensor)
     optimal_thresholds = []
-    dice_list = []
     for i in range(len(tpr)):
         J = tpr[i] - fpr[i]  # Youden's index
         idx = np.argmax(J)
@@ -79,20 +80,15 @@ def AP(pred_list, gt_list, thresholds, num_classes = 4, average = None):
     transform = transforms.Compose([
         transforms.ToTensor(),  # Converts image to tensor with values in [0, 1]
     ])
-    gt_list_tensor = [None] * len(pred_list)
-    pred_list_tensor = gt_list_tensor.copy()
-    for i in range(len(pred_list)):
-        gt_list_tensor[i] = transform(gt_list[i])
-        pred_list_tensor[i] = transform(pred_list[i])
+    gt_list_tensor = [transform(gt) for gt in gt_list]
+    pred_list_tensor = [transform(pred) for pred in pred_list]
+
     # input shape: [n, num_classes, w, h]
     gt_list_tensor = torch.stack(gt_list_tensor, dim=0)
     pred_list_tensor = torch.stack(pred_list_tensor, dim=0)
-    for i, th in enumerate(thresholds):
-        if th == 1.0:
-            thresholds[i] = float(0.0)
-        else:
-            thresholds[i] = float(th)
-    AP = multilabel_average_precision(pred_list_tensor, gt_list_tensor, num_classes, average, thresholds=thresholds)#None)
+    AP = []
+    for i in range(num_classes):
+        AP.append(binary_average_precision(pred_list_tensor[:,i,:,:], gt_list_tensor[:,i,:,:], thresholds=[thresholds[i]])) #None)
     return AP
 
 
@@ -108,7 +104,7 @@ def compute_f1_score(ground_truth_region_map, estimated_region_map, threshold):
     recall = true_positive / total_actual_positive if total_actual_positive != 0 else 0
     
     if precision + recall == 0:
-        f1_score = 1
+        f1_score = 0
     else:
         f1_score = 2 * (precision * recall) / (precision + recall)
     
@@ -138,12 +134,15 @@ def OIS(pred_list, gt_list, thresh_list, num_classes):
 
 def ODS(pred_list, gt_list, thresh_list, num_classes):
     max_f1_list = []
+    best_threshold = []
     for class_i in range(num_classes):
         # Calculate average F1 score for each threshold and find the maximum
         pred_list_class = [pred[:,:,class_i] for pred in pred_list]
         gt_list_class = [gt[:,:,class_i] for gt in gt_list]
-        max_f1_list.append(max([f1(pred_list_class, gt_list_class, threshold) for threshold in thresh_list]))
-    return max_f1_list
+        computed_list = [f1(pred_list_class, gt_list_class, threshold) for threshold in thresh_list]
+        max_f1_list.append(max(computed_list))
+        best_threshold.append(thresh_list[np.where(computed_list == max(computed_list))[0]])
+    return max_f1_list, best_threshold
 
 
 # CLDice https://github.com/jocpae/clDice/blob/master/cldice_metric/cldice.py

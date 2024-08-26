@@ -60,111 +60,38 @@ def convert_maps_to_rgbs(binary_maps):
 def save_image_batch_to_disk(tensor, output_dir, file_names, img_shape=None, arg=None, is_inchannel=False):
 
     os.makedirs(output_dir, exist_ok=True)
-    if not True:
-        assert len(tensor.shape) == 4, tensor.shape
-        img_shape = tensor.shape
-        img_height, img_width = img_shape[2], img_shape[3]
-        for tensor_image, file_name in zip(tensor, file_names):
-            image_vis = kn.utils.tensor_to_image(
-                torch.sigmoid(tensor_image))#[..., 0]
-            image_vis = (255.0*(1.0 - image_vis)).astype(np.uint8)
-            output_file_name = os.path.join(output_dir, file_name)
-            image_vis =cv2.resize(image_vis, (img_width, img_height))
-            os.makedirs(os.path.dirname(output_file_name), exist_ok=True)
-            assert cv2.imwrite(output_file_name, image_vis)
-    else:
-        if is_inchannel:
 
-            tensor, tensor2 = tensor
-            fuse_name = 'fusedCH'
-            av_name='avgCH'
-            is_2tensors=True
-            edge_maps2 = []
-            for i in tensor2:
-                tmp = torch.sigmoid(i).cpu().detach().numpy()
-                edge_maps2.append(tmp)
-            tensor2 = np.array(edge_maps2)
-        else:
-            fuse_name = 'fused'
-            av_name = 'avg'
-            tensor2=None
-            tmp_img2 = None
+    # 255.0 * (1.0 - em_a)
+    edge_maps = []
+    for i in tensor:
+        tmp = torch.sigmoid(i).cpu().detach().numpy()
+        edge_maps.append(tmp)
+    tensor = np.array(edge_maps)
+ 
+    image_shape = tensor.shape[0] * [[tensor.shape[3], tensor.shape[2]]]
+    assert len(image_shape) == len(file_names)
 
-        output_dir_f = os.path.join(output_dir, fuse_name)
-        output_dir_a = os.path.join(output_dir, av_name)
-        os.makedirs(output_dir_f, exist_ok=True)
-        os.makedirs(output_dir_a, exist_ok=True)
+    idx = 0
+    for file_name in file_names:
+        tmp = tensor[idx, :, ...]
+        tmp = np.squeeze(tmp)
+        
+        tmp_img = tmp
+        tmp_img = np.uint8(image_normalization(tmp_img))
+        tmp_img = cv2.bitwise_not(tmp_img)
+        pred = tmp_img
 
-        # 255.0 * (1.0 - em_a)
-        edge_maps = []
-        for i in tensor:
-            tmp = torch.sigmoid(i).cpu().detach().numpy()
-            edge_maps.append(tmp)
-        tensor = np.array(edge_maps)
-        # print(f"tensor shape: {tensor.shape}")
+        pred_np = np.array(pred, dtype=np.uint8)
+        mask = pred_np/255
+        mask =  (mask > 0.9).astype(np.uint8)
+        final_img = convert_maps_to_rgbs(mask)
+        output_file_name = os.path.join(output_dir, "/".join(file_name.split("/")[4:]))
+        os.makedirs(os.path.dirname(output_file_name), exist_ok=True)
 
-        # image_shape = [x.cpu().detach().numpy() for x in img_shape]
-        # (H, W) -> (W, H)
-        # image_shape = [[y, x] for x, y in zip(image_shape[0], image_shape[1])]
-        image_shape = tensor.shape[0] * [[tensor.shape[3], tensor.shape[2]]]
-        assert len(image_shape) == len(file_names)
+        cv2.imwrite(output_file_name, final_img)
+        np.save(os.path.splitext(output_file_name)[0] + ".npy", 1-(pred_np/255))
 
-        idx = 0
-        for i_shape, file_name in zip(image_shape, file_names):
-            tmp = tensor[idx, :, ...]
-            tmp2 = tensor2[idx,:, ...] if tensor2 is not None else None
-            # tmp = np.transpose(np.squeeze(tmp), [0, 1, 2])
-            tmp = np.squeeze(tmp)
-            tmp2 = np.squeeze(tmp2) if tensor2 is not None else None
-
-            # Iterate our all 7 NN outputs for a particular image
-            preds = []
-            tmp_img = tmp
-            tmp_img = np.uint8(image_normalization(tmp_img))
-            tmp_img = cv2.bitwise_not(tmp_img)
-                # tmp_img[tmp_img < 0.0] = 0.0
-                # tmp_img = 255.0 * (1.0 - tmp_img)
-                # if tmp2 is not None:
-                #     tmp_img2 = tmp2[i]
-                #     tmp_img2 = np.uint8(image_normalization(tmp_img2))
-                #     tmp_img2 = cv2.bitwise_not(tmp_img2)
-
-                # # Resize prediction to match input image size
-                # if not tmp_img.shape[1] == i_shape[0] or not tmp_img.shape[0] == i_shape[1]:
-                #     tmp_img = cv2.resize(tmp_img, (i_shape[0], i_shape[1]))
-                #     tmp_img2 = cv2.resize(tmp_img2, (i_shape[0], i_shape[1])) if tmp2 is not None else None
-
-
-                # if tmp2 is not None:
-                #     tmp_mask = np.logical_and(tmp_img>128,tmp_img2<128)
-                #     tmp_img= np.where(tmp_mask, tmp_img2, tmp_img)
-                #     preds.append(tmp_img)
-
-                # else:
-            preds.append(tmp_img)
-
-
-            # Get the mean prediction of all the 7 outputs
-            average = np.array(preds[0], dtype=np.uint8)
-            mask = average/255
-            # print(np.unique(mask))
-            mask =  (mask > 0.9).astype(np.uint8)
-            # print(np.unique(mask))
-            final_img = convert_maps_to_rgbs(mask)
-            # average = np.uint8(np.mean(average, axis=0))
-            output_file_name_f = os.path.join(output_dir_f, "/".join(file_name.split("/")[4:]))
-            output_file_name_a = os.path.join(output_dir_a, "/".join(file_name.split("/")[4:]))
-            os.makedirs(os.path.dirname(output_file_name_f), exist_ok=True)
-            os.makedirs(os.path.dirname(output_file_name_a), exist_ok=True)
-            if False:
-                cv2.imwrite(output_file_name_f, fuse)
-                cv2.imwrite(output_file_name_a, average)
-            else:
-                # np.save(os.path.splitext(output_file_name_f)[0] + ".npy", 1-(fuse/255))
-                cv2.imwrite(output_file_name_a, final_img)
-                np.save(os.path.splitext(output_file_name_a)[0] + ".npy", 1-(average/255))
-
-            idx += 1
+        idx += 1
 
 
 

@@ -150,45 +150,23 @@ class Trainer:
                 gt_list = gt_list.permute(0,2,3,1).numpy()
                 pred_list = [pred_list[i] for i in range(pred_list.shape[0])]
                 gt_list = [gt_list[i] for i in range(gt_list.shape[0])]
-                thresh_list = np.linspace(0.01, 0.99, 99)
                 # calculate the dice score, optimal thresholds, AP, CLDice, ODS, OIS
-                optimal_thresholds = find_optimal_thresholds(pred_list, gt_list, num_classes = 4)
-                pred_list_handled, gt_list_handled = check_for_zeros(pred_list, gt_list, optimal_thresholds, num_classes = 4)
+                optimal_thresholds_orig = find_optimal_thresholds(pred_list, gt_list, num_classes=4)
+                pred_list_handled, gt_list_handled = check_for_zeros(pred_list, gt_list, optimal_thresholds_orig, num_classes=4)
+                ois = OIS(pred_list_handled, gt_list_handled, np.linspace(0.01, 0.99, 99), num_classes=4)
+                ods, optimal_thresholds_ods = ODS(pred_list_handled, gt_list_handled, np.linspace(0.01, 0.99, 99), num_classes=4)
+                optimal_thresholds = [torch.tensor(npy_array[0], dtype=torch.float64) for npy_array in optimal_thresholds_ods]
                 dice_score = compute_dice(pred_list_handled, gt_list_handled, optimal_thresholds)
-                ap = AP(pred_list_handled, gt_list_handled, thresholds = list(np.array(optimal_thresholds)), num_classes = 4, average = None)
-                clDice_score = compute_CLDice(pred_list, gt_list, optimal_thresholds, num_classes = 4)
+                ap = AP(pred_list_handled, gt_list_handled, thresholds=list(np.array(optimal_thresholds)), num_classes=4, average=None)
+                clDice_score = compute_CLDice(pred_list_handled, gt_list_handled, optimal_thresholds, num_classes=4)
+                
+                print(f"{4} class evaluation:")
+                print("ods", ods)
+                print("ois", ois)
                 print("dice_score", np.array(dice_score))
                 print("optimal_thresholds", np.array(optimal_thresholds))
                 print("ap", np.array(ap))
                 print("clDice_score", np.array(clDice_score))
-                ods = ODS(pred_list, gt_list, thresh_list, num_classes=4)
-                ois = OIS(pred_list, gt_list, thresh_list, num_classes=4)
-                print("ods", ods)
-                print("ois", ois)
-                # self.evaluator.add_batch(target.cpu().numpy(), pred.cpu().numpy())  # B,H,W
-
-        # if evaluation:
-        #     pred_list = output.detach().cpu()
-        #     gt_list = target.cpu().long()
-        #     thresh_list = np.linspace(0.01, 0.99, 99)
-        #     # calculate the dice score, optimal thresholds, AP, CLDice, ODS, OIS
-        #     optimal_thresholds = find_optimal_thresholds(pred_list, gt_list, num_classes = 4)
-        #     pred_list_handled, gt_list_handled = check_for_zeros(pred_list.numpy(), gt_list.numpy(), optimal_thresholds, num_classes = 4)
-            # dice_score = compute_dice(pred_list_handled, gt_list_handled.long(), optimal_thresholds)
-            # ap = AP(pred_list_handled, gt_list_handled.long(), thresholds = list(np.array(optimal_thresholds)), num_classes = 4, average = None)
-            # clDice_score = compute_CLDice(pred_list.numpy(), gt_list.numpy(), optimal_thresholds, num_classes = 4)
-            # print("dice_score", np.array(dice_score))
-            # print("optimal_thresholds", np.array(optimal_thresholds))
-            # print("ap", np.array(ap))
-            # print("clDice_score", np.array(clDice_score))
-
-            # ods = ODS(pred_list.numpy(), gt_list.numpy(), thresh_list, num_classes=4)
-            # ois = OIS(pred_list.numpy(), gt_list.numpy(), thresh_list, num_classes=4)
-            # print("ods", ods)
-            # print("ois", ois)
-            # Acc = self.evaluator.Pixel_Accuracy()
-            # mIoU = self.evaluator.Mean_Intersection_over_Union()
-            # print('Epoch: {}, Acc: {:.3f}, mIoU: {:.3f}'.format(epoch, Acc, mIoU))
 
     @torch.no_grad()
     def validation(self, epoch, test=False):
