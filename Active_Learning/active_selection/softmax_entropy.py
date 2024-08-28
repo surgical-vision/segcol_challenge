@@ -5,7 +5,7 @@ from tqdm import tqdm
 import numpy as np
 from torch.utils.data import DataLoader
 from utils.misc import *
-
+from torchvision import transforms
 
 class SoftmaxEntropySelector:
 
@@ -24,8 +24,11 @@ class SoftmaxEntropySelector:
         )
         print('subset_img_paths', len(subset_img_paths))
         print('remset_img_paths', len(remset_img_paths))
-        unlabelset = BaseDataset(subset_img_paths, subset_target_paths)
-        unlabelset.transform = get_transform('test', base_size=self.img_size)
+        simple_transform = transforms.Compose([
+                            transforms.Resize((480, 640)),
+                            transforms.ToTensor()])
+        unlabelset = BaseDataset(subset_img_paths, subset_target_paths, simple_transform)
+        # unlabelset.transform = get_transform('test', base_size=self.img_size)
 
         dataloader = DataLoader(unlabelset,
                                 batch_size=8, shuffle=False,
@@ -56,7 +59,8 @@ class SoftmaxEntropySelector:
 
         active_trainset.add_by_select_remain_paths(select_img_paths, select_target_paths,
                                                    remain_img_paths, remain_target_paths)
-
+        return select_img_paths
+    
     @staticmethod
     def cal_entropy_score(probs):  # C,H,W 
         batch_scores = []

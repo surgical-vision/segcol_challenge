@@ -7,7 +7,7 @@ import numpy as np
 from sklearn.metrics import pairwise_distances
 from torch.utils.data import DataLoader
 from utils.misc import *
-
+from torchvision import transforms
 
 class CoreSetSelector:
     def __init__(self, dataset, img_size, feature_dim):
@@ -59,9 +59,12 @@ class CoreSetSelector:
         # cluster centers
         total_img_paths = active_trainset.label_img_paths + subset_img_paths
         total_target_paths = active_trainset.label_target_paths + subset_target_paths
+        simple_transform = transforms.Compose([
+                            transforms.Resize((480, 640)),
+                            transforms.ToTensor()])
+        total_dataset = BaseDataset(total_img_paths, total_target_paths, simple_transform)
 
-        total_dataset = BaseDataset(total_img_paths, total_target_paths)
-        total_dataset.transform = get_transform('test', base_size=self.img_size)
+        # total_dataset.transform = get_transform('test', base_size=self.img_size)
 
         dataloader = DataLoader(total_dataset,
                                 batch_size=8, shuffle=False,
@@ -88,14 +91,17 @@ class CoreSetSelector:
         select_img_paths, select_target_paths = [], []
         for i in select_idxs:
             select_img_paths.append(total_img_paths[i])
-            select_target_paths.append(total_target_paths[i])
+            if subset_target_paths != []:
+                select_target_paths.append(total_target_paths[i])
 
         remain_img_paths, remain_target_paths = [], []
         for i in remain_idxs:
             remain_img_paths.append(total_img_paths[i])
-            remain_target_paths.append(total_target_paths[i])
-        remain_img_paths += remset_img_paths  # 加上 subset 剩余子集
+            if subset_target_paths != []:
+                remain_target_paths.append(total_target_paths[i])
+        remain_img_paths += remset_img_paths  
         remain_target_paths += remset_target_paths
 
         active_trainset.add_by_select_remain_paths(select_img_paths, select_target_paths,
                                                    remain_img_paths, remain_target_paths)
+        return select_img_paths

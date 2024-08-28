@@ -56,9 +56,9 @@ class SegColDataset(Dataset):
         return sample
     
 def main():
-    root_dir = '/media/razvan/segcol/'
-    train_img_file = '/media/razvan/segcol/train/train_list.csv'
-    train_segm_file = '/media/razvan/segcol/train/train_segmentation_maps.csv'
+    root_dir = ''
+    train_img_file = 'train/train_list.csv'
+    train_segm_file = 'train/train_segmentation_maps.csv'
     transform = transforms.Compose([
     transforms.Resize((640, 480)),
     transforms.ToTensor()

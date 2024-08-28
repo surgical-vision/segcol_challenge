@@ -31,11 +31,6 @@ def is_interval(epoch):
 
 def main():
     random.seed(args.seed)
-    root_dir = ''
-    train_img_file = 'train/train_list.csv'
-    train_segm_file = 'train/train_segmentation_maps.csv'
-    valid_img_file = 'valid/valid_list.csv'
-    valid_segm_file = 'valid/valid_segmentation_maps.csv'
     train_transform = A.Compose([   #A.Resize((480, 640)),
                                     # A.HorizontalFlip(p=0.5),
                                     # A.VerticalFlip(p=0.5),
@@ -56,14 +51,12 @@ def main():
     simple_transform = transforms.Compose([
                             transforms.Resize((480, 640)),
                             transforms.ToTensor()])
-    train_dataset = SegColDataset(root_dir, 
-                                  train_img_file, train_segm_file, 
+    train_dataset = SegColDataset(args.root_dir, 
+                                  args.train_img_file, args.train_segm_file, 
                                   simple_transform)
-                                #   get_transform('train', (640, 480), (640, 480)))
-    valid_dataset = SegColDataset(root_dir, 
-                                  valid_img_file, valid_segm_file, 
+    valid_dataset = SegColDataset(args.root_dir, 
+                                  args.valid_img_file, args.valid_segm_file, 
                                   simple_transform)
-                                #   get_transform('val', (640, 480)))
     model = DeepLab(args.backbone, args.out_stride, train_dataset.class_count, args.sync_bn)
 
     saver = Saver(args, timestamp=get_curtime())
@@ -75,11 +68,6 @@ def main():
         if is_interval(epoch):
             trainer.validation(epoch)
     print('Valid: best Dice:', trainer.best_dice, 'AP:', trainer.best_ap)
-
-    # # test
-    # epoch = trainer.load_best_checkpoint()
-    # test_mIoU, test_Acc = trainer.validation(epoch, test=True)
-    # print('Test: best mIoU:', test_mIoU, 'pixelAcc:', test_Acc)
 
 
 if __name__ == '__main__':

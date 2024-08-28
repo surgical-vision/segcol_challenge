@@ -27,3 +27,4 @@ class RandomSelector:
 
         active_trainset.add_by_select_remain_paths(select_img_paths, select_target_paths,
                                                    remain_img_paths, remain_target_paths)
+        return select_img_paths

@@ -10,18 +10,18 @@ from utils.image import save_image_batch_to_disk
 
 model = DeepLab('drn', 16, 4, False)
 
-root_dir = '/media/razvan/segcol/'
-train_img_file = '/media/razvan/segcol/train/train_list.csv'
-train_segm_file = '/media/razvan/segcol/train/train_segmentation_maps.csv'
-valid_img_file = '/media/razvan/segcol/valid/valid_list.csv'
-valid_segm_file = '/media/razvan/segcol/valid/valid_segmentation_maps.csv'
+root_dir = ''
+train_img_file = 'train/train_list.csv'
+train_segm_file = 'train/train_segmentation_maps.csv'
+valid_img_file = 'valid/valid_list.csv'
+valid_segm_file = 'valid/valid_segmentation_maps.csv'
 simple_transform = transforms.Compose([
                         transforms.Resize((480, 640)),
                         transforms.ToTensor()])
 valid_dataset = SegColDataset(root_dir, 
                                 valid_img_file, valid_segm_file, 
                                 simple_transform)
-checkpoint = torch.load('/home/razvan/seg_col_task2/runs/SegCol/None_Jun30_163142/checkpoint.pth.tar')
+checkpoint = torch.load('checkpoint.pth.tar')
 model.load_state_dict(checkpoint["state_dict"])
 model.eval()
 model.to('cuda:0')

@@ -6,23 +6,17 @@ pprint(vars(args))
 
 import os
 
-os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
-# os.environ["CUDA_VISIBLE_DEVICES"] = args.gpu_ids  # 设置可见 gpus
-os.environ["CUDA_HOME"] = "/nfs/xs/local/cuda-10.2"
-
 if len(args.gpu_ids) > 1:
     args.sync_bn = True
 
 import torch
 # from torch.utils.tensorboard import SummaryWriter
-import argument_parser
-import constants
-from datasets.build_datasets import build_datasets, data_cfg
+
 from model.deeplab import DeepLab
-from utils.calculate_weights import calculate_class_weights
+# from utils.calculate_weights import calculate_class_weights
 from utils.saver import Saver
 from utils.trainer import Trainer
-from utils.misc import AccCaches, get_curtime, write_list_to_txt, read_txt_as_list
+from utils.misc import get_curtime, write_list_to_txt
 from pprint import pprint
 from active_selection import get_active_selector
 import shutil
@@ -30,7 +24,8 @@ import random
 import math
 import glob
 import numpy as np
-
+from torchvision import transforms
+from datasets.dataset import SegColDataset, ActiveSegCol
 
 def is_interval(epoch):
     return epoch % args.eval_interval == (args.eval_interval - 1)
@@ -38,16 +33,23 @@ def is_interval(epoch):
 
 def main():
     random.seed(args.seed)  # active trainset
-    active_trainset, validset, testset = build_datasets(args.dataset, args.base_size, args.crop_size, args.init_percent)
 
+    simple_transform = transforms.Compose([
+                            transforms.Resize((480, 640)),
+                            transforms.ToTensor()])
+    active_trainset = ActiveSegCol(args.root_dir, 
+                                  args.train_img_file, args.train_segm_file, 
+                                  transform=simple_transform, split=args.init_percent)
+    valid_dataset = SegColDataset(args.root_dir, 
+                                  args.valid_img_file, args.valid_segm_file, 
+                                  simple_transform)
     if args.resume_dir and args.resume_percent:  # 
         iter_dir = f'runs/{args.dataset}/{args.resume_dir}/runs_0{args.resume_percent}'
         active_trainset.add_preselect_data(iter_dir)  # add preselect data, and update label/unlabel data
 
     # global writer
     timestamp = get_curtime()
-    global_saver = Saver(args, exp_dir=args.resume_dir, timestamp=timestamp)
-    # global_writer = SummaryWriter(global_saver.exp_dir)
+
 
     active_selector = get_active_selector(args)
 
@@ -55,57 +57,41 @@ def main():
     select_num = args.select_num
     if select_num is None:
         if args.percent_step:  
-            select_num = math.ceil(active_trainset.len_total_dataset * args.percent_step / 100)
+            select_num = math.ceil(active_trainset.__len__() * args.percent_step / 100)
         else:
             raise ValueError('must set select_num or percent_step')
 
     start_percent = args.resume_percent if args.resume_percent else args.init_percent
-
+    active_trainset.update_iter_img_paths()
     for percent in range(start_percent, args.max_percent + 1, args.percent_step):
         run_id = f'runs_{percent:03d}'
         print(run_id)
 
-        # global: len(dataset) of current percent data
-        # global_writer.add_scalar('Active/global_trainset', len(active_trainset), global_step=percent)
 
         ## ------------ begin training with current percent data ------------
 
         # saver/writer of each iteration
         saver = Saver(args, exp_dir=args.resume_dir, timestamp=timestamp, suffix=run_id)
         # writer = SummaryWriter(saver.exp_dir)
-        # save current data path -> train model -> select new data -> 下一轮再 save data path
+        # save current data path -> train model -> select new data 
         write_list_to_txt(active_trainset.label_img_paths, txt_path=os.path.join(saver.exp_dir, 'label_imgs.txt'))
         write_list_to_txt(active_trainset.label_target_paths, txt_path=os.path.join(saver.exp_dir, 'label_targets.txt'))
 
         # create model from scratch
-        model = DeepLab(args.backbone, args.out_stride, active_trainset.num_classes, args.sync_bn,
-                        with_mask=args.with_mask,
-                        with_pam=args.with_pam, branch_early=args.branch_early)
-
-        trainer = Trainer(args, model, active_trainset, validset, testset, saver, writer)
+        model = DeepLab(args.backbone, args.out_stride, active_trainset.class_count, args.sync_bn)
+        
+        trainer = Trainer(args, model, active_trainset, valid_dataset, saver)
 
         # train/valid
         for epoch in range(args.epochs):
             trainer.training(epoch)
             if is_interval(epoch):
                 trainer.validation(epoch)
-        print('Valid: best mIoU:', trainer.best_mIoU, 'Acc:', trainer.best_Acc)
+        print('Valid: best DSC:', trainer.best_dice, 'best AP:', trainer.best_ap)
 
-        # test
-        epoch = trainer.load_best_checkpoint()
-        test_dice, test_ap = trainer.validation(epoch, test=True)
-        print('Test: best Dice:', test_dice, 'best AP:', test_ap)
-
-        ## ------------ end training with current percent data ------------
-
-        # global: eval metrics of current percent data
-        # global_writer.add_scalar('Active/global_Dice', test_dice, global_step=percent)
-        # global_writer.add_scalar('Active/global_AP', test_ap, global_step=percent)
 
         # end active training
         if percent == args.max_percent:
-            # global_writer.flush()
-            # global_writer.close()
             print('end active training')
             break
 

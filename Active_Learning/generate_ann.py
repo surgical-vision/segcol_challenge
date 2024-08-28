@@ -1,7 +1,7 @@
 import os
 import csv
 import re
-
+ # Script to extract the filename correspondences from the dataset
 def get_sort_key(filename):
     # Extract the last numerical value from the filename
     match = re.search(r'_(\d+)\.png$', filename)
