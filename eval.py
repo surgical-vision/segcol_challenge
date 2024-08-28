@@ -29,7 +29,7 @@ def evaluate_classes(pred_list, gt_list, num_classes):
     pred_list_handled, gt_list_handled = check_for_zeros(pred_list, gt_list, optimal_thresholds_orig, num_classes=num_classes)
     ois = OIS(pred_list_handled, gt_list_handled, np.linspace(0.01, 0.99, 99), num_classes=num_classes)
     ods, optimal_thresholds_ods = ODS(pred_list_handled, gt_list_handled, np.linspace(0.01, 0.99, 99), num_classes=num_classes)
-    optimal_thresholds = [torch.tensor(npy_array[0], dtype=torch.float64) for npy_array in optimal_thresholds_ods]
+    optimal_thresholds = [torch.tensor(npy_array, dtype=torch.float64) for npy_array in optimal_thresholds_ods]
     dice_score = compute_dice(pred_list_handled, gt_list_handled, optimal_thresholds)
     ap = AP(pred_list_handled, gt_list_handled, thresholds=list(np.array(optimal_thresholds)), num_classes=num_classes, average=None)
     clDice_score = compute_CLDice(pred_list_handled, gt_list_handled, optimal_thresholds, num_classes=num_classes)

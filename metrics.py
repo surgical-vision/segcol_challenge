@@ -141,7 +141,7 @@ def ODS(pred_list, gt_list, thresh_list, num_classes):
         gt_list_class = [gt[:,:,class_i] for gt in gt_list]
         computed_list = [f1(pred_list_class, gt_list_class, threshold) for threshold in thresh_list]
         max_f1_list.append(max(computed_list))
-        best_threshold.append(thresh_list[np.where(computed_list == max(computed_list))[0]])
+        best_threshold.append(thresh_list[np.where(computed_list == np.max(computed_list))][0])
     return max_f1_list, best_threshold
 
 
