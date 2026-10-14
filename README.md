@@ -3,6 +3,8 @@
 
 #### 🌐 Challenge Website [https://www.synapse.org/#!Synapse:syn54124209](https://www.synapse.org/#!Synapse:syn54124209)
 
+#### 🖥️ Project Page [https://xinweiju.github.io/segcol_challenge/](https://xinweiju.github.io/segcol_challenge/)
+
 #### 📧 Contact: [endovis-weiss-vision@ucl.ac.uk](endovis-weiss-vision@ucl.ac.uk)
 
 
