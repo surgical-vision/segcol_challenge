@@ -92,6 +92,30 @@ def AP(pred_list, gt_list, thresholds, num_classes = 4, average = None):
     return AP
 
 
+def AP_thorough(pred_list, gt_list, num_classes=4):
+    """Compute pixel-level AP from the complete precision--recall curve.
+
+    Unlike ``AP``, this metric consumes the continuous prediction scores and
+    does not use a fixed ODS threshold.
+    """
+    transform = transforms.Compose([
+        transforms.ToTensor(),
+    ])
+    gt_list_tensor = [(transform(gt) > 0.5).long() for gt in gt_list]
+    pred_list_tensor = [transform(pred).float() for pred in pred_list]
+
+    gt_list_tensor = torch.stack(gt_list_tensor, dim=0)
+    pred_list_tensor = torch.stack(pred_list_tensor, dim=0)
+
+    return [
+        binary_average_precision(
+            pred_list_tensor[:, class_i, :, :],
+            gt_list_tensor[:, class_i, :, :],
+        )
+        for class_i in range(num_classes)
+    ]
+
+
 def compute_f1_score(ground_truth_region_map, estimated_region_map, threshold):
     ground_truth_edge_map = ground_truth_region_map > threshold
     estimated_edge_map = estimated_region_map > threshold

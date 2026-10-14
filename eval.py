@@ -4,7 +4,15 @@ import glob
 import json
 import os
 import torch
-from metrics import find_optimal_thresholds, check_for_zeros, OIS, ODS, compute_dice, AP, compute_CLDice
+from metrics import (
+    AP_thorough,
+    ODS,
+    OIS,
+    check_for_zeros,
+    compute_CLDice,
+    compute_dice,
+    find_optimal_thresholds,
+)
 
 def load_image(file_path, npy=False):
     try:
@@ -30,8 +38,10 @@ def evaluate_classes(pred_list, gt_list, num_classes):
     ois = OIS(pred_list_handled, gt_list_handled, np.linspace(0.01, 0.99, 99), num_classes=num_classes)
     ods, optimal_thresholds_ods = ODS(pred_list_handled, gt_list_handled, np.linspace(0.01, 0.99, 99), num_classes=num_classes)
     optimal_thresholds = [torch.tensor(npy_array, dtype=torch.float64) for npy_array in optimal_thresholds_ods]
-    dice_score = compute_dice(pred_list_handled, gt_list_handled, optimal_thresholds)
-    ap = AP(pred_list_handled, gt_list_handled, thresholds=list(np.array(optimal_thresholds)), num_classes=num_classes, average=None)
+    # Pooled metrics use the original masks. Empty-frame replacement is only
+    # used by the per-frame metrics above and CLDice below.
+    dice_score = compute_dice(pred_list, gt_list, optimal_thresholds)
+    ap = AP_thorough(pred_list, gt_list, num_classes=num_classes)
     clDice_score = compute_CLDice(pred_list_handled, gt_list_handled, optimal_thresholds, num_classes=num_classes)
     
     print(f"{num_classes} class evaluation:")
