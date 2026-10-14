@@ -1,11 +1,7 @@
 # 🩺 [SegCol Challenge 2024](https://xinweiju.github.io/segcol_challenge/)
 ### 🌟 Semantic Segmentation for Tools and Fold Edges in Colonoscopy data
 
-#### 🖥️ Project Page [https://xinweiju.github.io/segcol_challenge/](https://xinweiju.github.io/segcol_challenge/)
-
-#### 🌐 Challenge Website [https://www.synapse.org/#!Synapse:syn54124209](https://www.synapse.org/#!Synapse:syn54124209)
-
-#### 📧 Contact: [endovis-weiss-vision@ucl.ac.uk](endovis-weiss-vision@ucl.ac.uk)
+[🖥️ Project Page](https://xinweiju.github.io/segcol_challenge/) · [📄 Paper — SegCol Challenge: Semantic Segmentation for Tools and Fold Edges in Colonoscopy Data](https://scholar.google.com/citations?view_op=view_citation&hl=zh-CN&user=INFoPj8AAAAJ&authuser=1&citation_for_view=INFoPj8AAAAJ:2osOgNQ5qMEC) · [🌐 Challenge Website](https://www.synapse.org/#!Synapse:syn54124209) · [📧 Contact](mailto:endovis-weiss-vision@ucl.ac.uk)
 
 
 ## 📈 Baseline
